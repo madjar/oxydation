@@ -1,5 +1,4 @@
 use std::fmt;
-use std::strbuf::StrBuf;
 
 
 pub struct Board {
@@ -17,9 +16,9 @@ impl Board {
     fn check(&self, x: uint, y: uint) {
         if x >= self.x || y >= self.y {
             fail!();
-        }
-    
-}
+        }    
+    }
+
     pub fn get(&self, x: uint, y: uint) -> uint {
         self.check(x, y);
         *self.tab.get(x + y*self.x)
@@ -47,7 +46,7 @@ impl Board {
 
 impl fmt::Show for Board {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result{
-        let mut result = StrBuf::new();
+        let mut result = String::new();
         for _ in range(0, self.x+2) {
             result.push_char('-');
         }
@@ -57,7 +56,7 @@ impl fmt::Show for Board {
             for x in range(0, self.x) {
                 let value = self.get(x, y);
                 if value != 0 {
-                    result.push_str(self.get(x, y).to_str());
+                    result.push_str(self.get(x, y).to_str().as_slice());
                 } else {
                     result.push_char(' ');
                 }
@@ -67,6 +66,31 @@ impl fmt::Show for Board {
         for _ in range(0, self.x+2) {
             result.push_char('-');
         }
-        write!(f.buf, "{}", result)
+        write!(f, "{}", result)
     }
+}
+
+
+#[test]
+fn get_set() {
+    let mut b = Board::new(2, 2);
+    assert_eq!(b.get(0, 1), 0);
+    b.set(0, 1, 42);
+    assert_eq!(b.get(0, 1), 42);
+}
+
+#[test]
+fn gravity() {
+    let mut b = Board::new(3, 3);
+    b.set(0, 0, 3);
+    b.set(1, 1, 6);
+    b.set(2, 2, 9);
+    println!("{}", b);
+    b.apply_gravity();
+    println!("{}", b);
+    assert_eq!(b.get(0, 0), 3);
+    assert_eq!(b.get(1, 0), 6);
+    assert_eq!(b.get(1, 1), 0);
+    assert_eq!(b.get(2, 2), 0);
+    assert_eq!(b.get(2, 0), 9);
 }
