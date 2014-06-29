@@ -30,9 +30,9 @@ impl Board {
     }
 
     pub fn apply_gravity(&mut self) {
-        for y in range(0, self.y) {
+        for x in range(0, self.x) {
             let mut last_free = 0;
-            for x in range(0, self.x) {
+            for y in range(0, self.y) {
                 let value = self.get(x, y);
                 if value != 0 {
                     self.set(x, y, 0);
@@ -83,12 +83,14 @@ fn get_set() {
 fn gravity() {
     let mut b = Board::new(3, 3);
     b.set(0, 0, 3);
+    b.set(0, 1, 4);
     b.set(1, 1, 6);
     b.set(2, 2, 9);
     println!("{}", b);
     b.apply_gravity();
     println!("{}", b);
     assert_eq!(b.get(0, 0), 3);
+    assert_eq!(b.get(0, 1), 4);
     assert_eq!(b.get(1, 0), 6);
     assert_eq!(b.get(1, 1), 0);
     assert_eq!(b.get(2, 2), 0);
