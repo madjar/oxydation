@@ -1,0 +1,10 @@
+[package]
+
+name = "oxydation"
+version = "0.9.0"
+authors = [ "georges.dubus@compiletoi.net" ]
+
+[[bin]]
+
+name = "oxydation"
+
