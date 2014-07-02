@@ -1,6 +1,9 @@
+extern crate test;
+
 use board::Board;
 use std::rand::{task_rng, Rng};
 use std::io::timer::sleep;
+
 mod board;
 
 fn main() {
