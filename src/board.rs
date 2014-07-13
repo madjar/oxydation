@@ -1,9 +1,5 @@
 use std;
 use std::collections::hashmap::HashSet;
-use std::iter::FromIterator;
-use test::Bencher;
-use std::rand::random;
-use std::from_str::from_str;
 
 #[deriving(PartialEq, Eq)]
 pub struct Board {
@@ -187,68 +183,76 @@ impl std::fmt::Show for Board {
     }
 }
 
+#[cfg(test)]
+mod test {
+    use std::iter::FromIterator;
+    use test::Bencher;
+    use std::rand::random;
+    use std::from_str::from_str;
+    use super::Board;
 
-#[test]
-fn get_set() {
-    let mut b = Board::new(2, 2);
-    assert_eq!(b.get(0, 1), 0);
-    b.set(0, 1, 42);
-    assert_eq!(b.get(0, 1), 42);
-}
+    #[test]
+    fn get_set() {
+        let mut b = Board::new(2, 2);
+        assert_eq!(b.get(0, 1), 0);
+        b.set(0, 1, 42);
+        assert_eq!(b.get(0, 1), 42);
+    }
 
-#[test]
-fn board_from_str() {
-    let b: Board = from_str("678
-                             345
-                             012").unwrap();
-    for i in range(0u, 3) {
-        for j in range(0u, 3) {
-            assert_eq!(b.get(i, j), i + j*3);
+    #[test]
+    fn board_from_str() {
+        let b: Board = from_str("678
+                                345
+                                012").unwrap();
+        for i in range(0u, 3) {
+            for j in range(0u, 3) {
+                assert_eq!(b.get(i, j), i + j*3);
+            }
         }
     }
-}
 
-#[test]
-fn gravity() {
-    let mut b: Board = from_str("001
-                                 230
-                                 400").unwrap();
-    b.apply_gravity();
-    let expected: Board = from_str("000
-                                    200
-                                    431").unwrap();
-    assert_eq!(b, expected);
-}
-
-#[test]
-fn find_groups() {
-    let b: Board = from_str("11
-                             01").unwrap();
-    let expected = vec!(FromIterator::from_iter(
-        [(1u, 0u), (0u, 1u), (1u, 1u)]
-            .to_owned().move_iter()));
-
-    assert_eq!(b.find_groups(), expected);
-}
-
-#[bench]
-fn bench_find_groups(b: &mut Bencher) {
-    let mut board = Board::new(10, 10);
-    for t in board.tab.mut_iter() {
-        *t = random::<uint>() % 10;
+    #[test]
+    fn gravity() {
+        let mut b: Board = from_str("001
+                                    230
+                                    400").unwrap();
+        b.apply_gravity();
+        let expected: Board = from_str("000
+                                       200
+                                       431").unwrap();
+        assert_eq!(b, expected);
     }
 
-    b.iter(|| board.find_groups());
-}
+    #[test]
+    fn find_groups() {
+        let b: Board = from_str("11
+                                01").unwrap();
+        let expected = vec!(FromIterator::from_iter(
+            [(1u, 0u), (0u, 1u), (1u, 1u)]
+                .to_owned().move_iter()));
 
-#[test]
-fn transform_matches() {
-    let mut b: Board = from_str("104440
-                             123340
-                             122344").unwrap();
-    b.transform_matches();
-    let expected: Board = from_str("000000
-                                    000000
-                                    230450").unwrap();
-    assert_eq!(b, expected);
+        assert_eq!(b.find_groups(), expected);
+    }
+
+    #[bench]
+    fn bench_find_groups(b: &mut Bencher) {
+        let mut board = Board::new(10, 10);
+        for t in board.tab.mut_iter() {
+            *t = random::<uint>() % 10;
+        }
+
+        b.iter(|| board.find_groups());
+    }
+
+    #[test]
+    fn transform_matches() {
+        let mut b: Board = from_str("104440
+                                    123340
+                                    122344").unwrap();
+        b.transform_matches();
+        let expected: Board = from_str("000000
+                                       000000
+                                       230450").unwrap();
+        assert_eq!(b, expected);
+    }
 }
