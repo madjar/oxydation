@@ -102,27 +102,26 @@ impl Board {
 
 impl fmt::Show for Board {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result{
-        let mut result = String::new();
         for _ in range(0, self.x+2) {
-            result.push_char('-');
+            try!(write!(f, "-"));
         }
-        result.push_char('\n');
+        try!(write!(f, "\n"));
         for y in range(0, self.y).rev() {
-            result.push_char('|');
+            try!(write!(f, "|"));
             for x in range(0, self.x) {
                 let value = self.get(x, y);
                 if value != 0 {
-                    result.push_str(self.get(x, y).to_str().as_slice());
+                    try!(write!(f, "{}", value));
                 } else {
-                    result.push_char(' ');
+                    try!(write!(f, " "));
                 }
             }
-            result.push_str("|\n");
+            try!(writeln!(f, "|"));
         }
         for _ in range(0, self.x+2) {
-            result.push_char('-');
+            try!(write!(f, "-"));
         }
-        write!(f, "{}", result)
+        Ok(())
     }
 }
 
