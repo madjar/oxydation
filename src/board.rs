@@ -21,7 +21,7 @@ impl Board {
     #[inline]
     fn check(&self, x: uint, y: uint) {
         if x >= self.x || y >= self.y {
-            fail!();
+            fail!("({}, {} is out of the board", x, y);
         }
     }
 
@@ -35,7 +35,7 @@ impl Board {
         *self.tab.get_mut(x + y*self.x) = value;
     }
 
-    pub fn apply_gravity(&mut self) {
+    fn apply_gravity(&mut self) {
         for x in range(0, self.x) {
             let mut last_free = 0;
             for y in range(0, self.y) {
@@ -98,6 +98,38 @@ impl Board {
 
         groups
     }
+
+    /// Transform all matching groups into elements of the next level
+    fn transform_matches(&mut self) -> bool {
+        let mut transformed_something = false;
+        for group in self.find_groups().iter() {
+            if group.len() < 3 {
+                continue
+            }
+            let &(x, y) = group.iter().next().unwrap();
+            let value = self.get(x, y);
+
+            for &(x, y) in group.iter() {
+                self.set(x, y, 0);
+            }
+
+            let &(new_x, new_y) = group.iter().min_by(|&&(x, y)| (y, x)).unwrap();
+            // TODO : representation problem when reaching 10
+            self.set(new_x, new_y, value + 1);
+            transformed_something = true;
+        }
+        transformed_something
+    }
+
+    /// Fall and transform matches, rince, repeat
+    pub fn evolve(&mut self) {
+        let mut one_more_step = true;
+        while one_more_step {
+            self.apply_gravity();
+            one_more_step = self.transform_matches();
+        }
+    }
+}
 
 impl std::from_str::FromStr for Board {
     fn from_str(s: &str) -> Option<Board> {
@@ -207,4 +239,16 @@ fn bench_find_groups(b: &mut Bencher) {
     }
 
     b.iter(|| board.find_groups());
+}
+
+#[test]
+fn transform_matches() {
+    let mut b: Board = from_str("104440
+                             123340
+                             122344").unwrap();
+    b.transform_matches();
+    let expected: Board = from_str("000000
+                                    000000
+                                    230450").unwrap();
+    assert_eq!(b, expected);
 }

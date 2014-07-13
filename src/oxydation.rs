@@ -16,10 +16,10 @@ fn demo() {
     loop {
         b.set(rng.gen_range(0u, 10u),
               9,
-              rng.gen_range(1u, 10u));
+              rng.gen_range(1u, 3u));
         println!("{}", b);
         sleep(500);
-        b.apply_gravity();
+        b.evolve();
         println!("{}", b);
         sleep(500);
     }
