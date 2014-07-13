@@ -5,6 +5,7 @@ use test::Bencher;
 use std::rand::random;
 use std::from_str::from_str;
 
+#[deriving(PartialEq, Eq)]
 pub struct Board {
     x: uint,
     y: uint,
@@ -177,29 +178,23 @@ fn board_from_str() {
 
 #[test]
 fn gravity() {
-    let mut b = Board::new(3, 3);
-    b.set(0, 0, 3);
-    b.set(0, 1, 4);
-    b.set(1, 1, 6);
-    b.set(2, 2, 9);
-    println!("{}", b);
+    let mut b: Board = from_str("001
+                                 230
+                                 400").unwrap();
     b.apply_gravity();
-    println!("{}", b);
-    assert_eq!(b.get(0, 0), 3);
-    assert_eq!(b.get(0, 1), 4);
-    assert_eq!(b.get(1, 0), 6);
-    assert_eq!(b.get(1, 1), 0);
-    assert_eq!(b.get(2, 2), 0);
-    assert_eq!(b.get(2, 0), 9);
+    let expected: Board = from_str("000
+                                    200
+                                    431").unwrap();
+    assert_eq!(b, expected);
 }
 
 #[test]
 fn find_groups() {
-    let mut b = Board::new(3,3);
-    b.set(1, 0, 1);
-    b.set(0, 1, 1);
-    b.set(1, 1, 1);
-    let expected = vec!(FromIterator::from_iter([(1u, 0u), (0u, 1u), (1u, 1u)].to_owned().move_iter()));
+    let b: Board = from_str("11
+                             01").unwrap();
+    let expected = vec!(FromIterator::from_iter(
+        [(1u, 0u), (0u, 1u), (1u, 1u)]
+            .to_owned().move_iter()));
 
     assert_eq!(b.find_groups(), expected);
 }
