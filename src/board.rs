@@ -1,10 +1,9 @@
-use std::fmt;
-use std::collections::hashmap::{
-    HashSet,
-};
+use std;
+use std::collections::hashmap::HashSet;
 use std::iter::FromIterator;
 use test::Bencher;
 use std::rand::random;
+use std::from_str::from_str;
 
 pub struct Board {
     x: uint,
@@ -98,10 +97,40 @@ impl Board {
 
         groups
     }
+
+impl std::from_str::FromStr for Board {
+    fn from_str(s: &str) -> Option<Board> {
+        let lines: Vec<&str> = s.lines()
+            .map(|line| line.trim_chars(' '))
+            .rev()
+            .collect();
+        let y = lines.len();
+        if y == 0 {
+            // There must be at least one line
+            return None;
+        }
+        let x = lines.get(0).len();
+        for line in lines.tail().iter() {
+            if line.len() != x {
+                // All lines must have the same len
+                return None;
+            }
+        }
+        let mut tab = Vec::with_capacity(x*y);
+        for line in lines.iter() {
+            for c in line.chars() {
+                match c.to_digit(10) {
+                    Some(d) => tab.push(d),
+                    None => return None
+                }
+            }
+        }
+        Some(Board { x: x, y: y, tab: tab })
+    }
 }
 
-impl fmt::Show for Board {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result{
+impl std::fmt::Show for Board {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result{
         for _ in range(0, self.x+2) {
             try!(write!(f, "-"));
         }
@@ -132,6 +161,18 @@ fn get_set() {
     assert_eq!(b.get(0, 1), 0);
     b.set(0, 1, 42);
     assert_eq!(b.get(0, 1), 42);
+}
+
+#[test]
+fn board_from_str() {
+    let b: Board = from_str("678
+                             345
+                             012").unwrap();
+    for i in range(0u, 3) {
+        for j in range(0u, 3) {
+            assert_eq!(b.get(i, j), i + j*3);
+        }
+    }
 }
 
 #[test]

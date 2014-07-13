@@ -15,7 +15,7 @@ fn demo() {
     let mut rng = task_rng();
     loop {
         b.set(rng.gen_range(0u, 10u),
-              rng.gen_range(0u, 10u),
+              9,
               rng.gen_range(1u, 10u));
         println!("{}", b);
         sleep(500);
