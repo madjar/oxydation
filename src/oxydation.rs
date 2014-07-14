@@ -1,10 +1,10 @@
 extern crate test;
 
 use game::Game;
-use std::rand::{task_rng, Rng, random};
 use std::io::timer::sleep;
 
 mod board;
+mod bot;
 mod game;
 
 fn main() {
@@ -13,10 +13,10 @@ fn main() {
 
 fn demo() {
     let mut g = Game::new(10, 10);
-    let mut rng = task_rng();
     loop {
         println!("{}", g.b);
-        g.play(rng.gen_range(0, 9), random()).ok().expect("Game over");
+        let (x, o) = bot::best_move(&g);
+        g.play(x, o).ok().expect("Game over");
         sleep(500);
     }
 }
