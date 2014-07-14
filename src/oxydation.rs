@@ -14,9 +14,10 @@ fn demo() {
     let mut b = Board::new(10, 10);
     let mut rng = task_rng();
     loop {
+        let value = b.get_random_value();
         b.set(rng.gen_range(0u, 10u),
               9,
-              rng.gen_range(1u, 3u));
+              value);
         println!("{}", b);
         sleep(500);
         b.evolve();

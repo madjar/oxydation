@@ -1,4 +1,5 @@
 use std;
+use std::rand::{task_rng, Rng};
 use std::collections::hashmap::HashSet;
 
 #[deriving(PartialEq, Eq)]
@@ -129,6 +130,10 @@ impl Board {
             self.apply_gravity();
             one_more_step = self.transform_matches();
         }
+    }
+
+    pub fn get_random_value(&self) -> uint {
+        task_rng().gen_range(1, self.highest + 1)
     }
 }
 
