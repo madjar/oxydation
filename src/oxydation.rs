@@ -16,7 +16,7 @@ fn demo() {
     let mut rng = task_rng();
     loop {
         println!("{}", g.b);
-        g.play(rng.gen_range(0, 9), random());
+        g.play(rng.gen_range(0, 9), random()).ok().expect("Game over");
         sleep(500);
     }
 }

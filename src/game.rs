@@ -1,5 +1,7 @@
-use std::mem;
-
+use std::{
+    mem,
+    fmt,
+};
 use board::Board;
 
 #[deriving(Rand)]
@@ -8,6 +10,27 @@ enum Orientation {
     Vertical,
     RevHorizontal,
     RevVertical,
+}
+
+pub type GameResult<T> = Result<T, GameError>;
+
+pub struct GameError {
+    pub kind: GameErrorKind,
+    pub desc: &'static str,
+}
+
+impl fmt::Show for GameError {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        write!(fmt, "{}", self.desc)
+    }
+}
+
+pub enum GameErrorKind {
+    GameOver,
+}
+
+fn error(kind: GameErrorKind, desc: &'static str) -> GameError {
+    GameError { kind: kind, desc: desc }
 }
 
 pub struct Game {
@@ -27,13 +50,13 @@ impl Game {
         self.current
     }
 
-    fn apply_play(&mut self, x: uint, o: Orientation) {
-        // TODO: handle defeat
-        let try_set = |b: &mut Board, x: uint, y: uint, value: uint| {
+    fn apply_play(&mut self, x: uint, o: Orientation) -> GameResult<()>{
+        let try_set = |b: &mut Board, x: uint, y: uint, value: uint| -> GameResult<()>{
             if b.get(x, y) != 0 {
-                fail!("Game lost");
+                return Err(error(GameOver, "This move ends the game"));
             }
             b.set(x, y, value);
+            Ok(())
         };
         let last_line = self.b.y - 1;
 
@@ -44,21 +67,21 @@ impl Game {
         }
         match o {
             Horizontal | RevHorizontal => {
-                try_set(&mut self.b, x, last_line, v1);
-                try_set(&mut self.b, x + 1, last_line, v2);
+                try!(try_set(&mut self.b, x, last_line, v1));
+                try!(try_set(&mut self.b, x + 1, last_line, v2));
             }
             Vertical | RevVertical => {
-                try_set(&mut self.b, x, last_line, v1);
-                try_set(&mut self.b, x, last_line - 1, v2);
+                try!(try_set(&mut self.b, x, last_line, v1));
+                try!(try_set(&mut self.b, x, last_line - 1, v2));
             }
         }
-
+        Ok(())
     }
 
-    pub fn play(&mut self, x: uint, o: Orientation) {
-        self.apply_play(x, o);
+    pub fn play(&mut self, x: uint, o: Orientation) -> GameResult<()> {
+        try!(self.apply_play(x, o));
         self.current = (self.b.get_random_value(),
                         self.b.get_random_value());
-        self.b.evolve()
+        Ok(self.b.evolve())
     }
 }
