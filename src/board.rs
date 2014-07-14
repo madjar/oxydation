@@ -5,13 +5,14 @@ use std::collections::hashmap::HashSet;
 pub struct Board {
     x: uint,
     y: uint,
-    tab: Vec<uint>
+    tab: Vec<uint>,
+    highest: uint,
 }
 
 
 impl Board {
     pub fn new(x: uint, y: uint) -> Board {
-        Board { x: x, y: y, tab: Vec::from_fn(x*y, |_| 0) }
+        Board { x: x, y: y, tab: Vec::from_fn(x*y, |_| 0), highest: 2 }
     }
 
     #[inline]
@@ -112,6 +113,10 @@ impl Board {
             let &(new_x, new_y) = group.iter().min_by(|&&(x, y)| (y, x)).unwrap();
             // TODO : representation problem when reaching 10
             self.set(new_x, new_y, value + 1);
+            if value >= self.highest {
+                self.highest += 1;
+            }
+
             transformed_something = true;
         }
         transformed_something
@@ -154,7 +159,8 @@ impl std::from_str::FromStr for Board {
                 }
             }
         }
-        Some(Board { x: x, y: y, tab: tab })
+        let max = *tab.iter().max().unwrap();
+        Some(Board { x: x, y: y, tab: tab, highest: max })
     }
 }
 
