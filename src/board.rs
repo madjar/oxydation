@@ -4,8 +4,8 @@ use std::collections::hashmap::HashSet;
 
 #[deriving(PartialEq, Eq)]
 pub struct Board {
-    x: uint,
-    y: uint,
+    pub x: uint,
+    pub y: uint,
     tab: Vec<uint>,
     highest: uint,
 }

@@ -1,27 +1,22 @@
 extern crate test;
 
-use board::Board;
-use std::rand::{task_rng, Rng};
+use game::Game;
+use std::rand::{task_rng, Rng, random};
 use std::io::timer::sleep;
 
 mod board;
+mod game;
 
 fn main() {
     demo();
 }
 
 fn demo() {
-    let mut b = Board::new(10, 10);
+    let mut g = Game::new(10, 10);
     let mut rng = task_rng();
     loop {
-        let value = b.get_random_value();
-        b.set(rng.gen_range(0u, 10u),
-              9,
-              value);
-        println!("{}", b);
-        sleep(500);
-        b.evolve();
-        println!("{}", b);
+        println!("{}", g.b);
+        g.play(rng.gen_range(0, 9), random());
         sleep(500);
     }
 }
