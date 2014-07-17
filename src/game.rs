@@ -5,7 +5,7 @@ use std::{
 use board::Board;
 
 #[deriving(Rand)]
-enum Orientation {
+pub enum Orientation {
     Horizontal,
     Vertical,
     RevHorizontal,
@@ -33,6 +33,7 @@ fn error(kind: GameErrorKind, desc: &'static str) -> GameError {
     GameError { kind: kind, desc: desc }
 }
 
+#[deriving(Clone)]
 pub struct Game {
     pub b: Board,
     current: (uint, uint),

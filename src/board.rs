@@ -2,11 +2,11 @@ use std;
 use std::rand::{task_rng, Rng};
 use std::collections::hashmap::HashSet;
 
-#[deriving(PartialEq, Eq)]
+#[deriving(PartialEq, Eq, Clone)]
 pub struct Board {
     pub x: uint,
     pub y: uint,
-    tab: Vec<uint>,
+    pub tab: Vec<uint>,
     highest: uint,
 }
 

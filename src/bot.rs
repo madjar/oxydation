@@ -1,4 +1,11 @@
-use std::rand;
+use std::{
+    rand,
+    num,
+};
+use std::iter::AdditiveIterator;
+use std::rand::Rng;
+
+use board::Board;
 
 use game::{
     Game,
@@ -17,9 +24,18 @@ fn available_moves(x: uint) -> Vec<(uint, Orientation)> {
         .collect()
 }
 
-pub fn best_move(g: &Game) -> (uint, Orientation) {
-    let moves = available_moves(g.b.x);
+fn score(b: &Board) -> uint {
+    b.tab.iter().map(|&i| num::pow(10u, i)).sum()
+}
 
+pub fn best_move(g: &Game) -> (uint, Orientation) {
+    let mut moves = available_moves(g.b.x);
     let mut rng = rand::task_rng();
-    rand::sample(&mut rng, moves.move_iter(), 1).pop().unwrap()
+    rng.shuffle(moves.as_mut_slice());
+
+    *moves.iter().max_by(|&&(x, o)| {
+        let mut game: Game = g.clone();
+        game.play(x, o);
+        score(&game.b)
+    }).unwrap()
 }
