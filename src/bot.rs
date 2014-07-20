@@ -35,7 +35,9 @@ pub fn best_move(g: &Game) -> (uint, Orientation) {
 
     *moves.iter().max_by(|&&(x, o)| {
         let mut game: Game = g.clone();
-        game.play(x, o);
-        score(&game.b)
+        match game.play(x, o) {
+            Ok(()) => score(&game.b),
+            Err(_) => 0,
+        }
     }).unwrap()
 }
