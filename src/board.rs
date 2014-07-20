@@ -25,7 +25,7 @@ impl Board {
 
     pub fn get(&self, x: uint, y: uint) -> uint {
         self.check(x, y);
-        *self.tab.get(x + y*self.x)
+        self.tab[x + y*self.x]
     }
 
     pub fn set(&mut self, x: uint, y: uint, value: uint) {
@@ -148,7 +148,7 @@ impl std::from_str::FromStr for Board {
             // There must be at least one line
             return None;
         }
-        let x = lines.get(0).len();
+        let x = lines[0].len();
         for line in lines.tail().iter() {
             if line.len() != x {
                 // All lines must have the same len
