@@ -1,6 +1,7 @@
 use std;
 use std::rand::{task_rng, Rng};
 use std::collections::hashmap::HashSet;
+use std::cmp;
 
 #[deriving(PartialEq, Eq, Clone)]
 pub struct Board {
@@ -164,7 +165,7 @@ impl std::from_str::FromStr for Board {
                 }
             }
         }
-        let max = *tab.iter().max().unwrap();
+        let max = cmp::max(*tab.iter().max().unwrap(), 2);
         Some(Board { x: x, y: y, tab: tab, highest: max })
     }
 }
